@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ME ON GAME - PRO TOURNAMENT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        :root { --red: #ff4655; --bg: #0f1923; --card: #1f2933; --gold: #ffb400; --white: #ece8e1; }
+        body { background: var(--bg); color: var(--white); font-family: 'Roboto', sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { width: 60px; height: 60px; background: var(--red); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-family: 'Orbitron'; font-weight: bold; margin: 0 auto 10px; border: 3px solid var(--white); box-shadow: 0 0 15px var(--red); }
+        h1 { font-family: 'Orbitron'; text-transform: uppercase; letter-spacing: 3px; font-size: 1.5rem; margin: 0; }
+
+        section { width: 100%; max-width: 900px; margin-bottom: 40px; }
+        h2 { font-family: 'Orbitron'; color: var(--red); border-left: 4px solid var(--red); padding-left: 10px; font-size: 1.1rem; text-transform: uppercase; margin-bottom: 20px; }
+
+        table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        th { background: rgba(0,0,0,0.3); color: var(--gold); font-family: 'Orbitron'; font-size: 0.8rem; }
+        tr.top-four { background: rgba(76, 175, 80, 0.1); }
+
+        .match-list { display: grid; gap: 10px; }
+        .match-card { background: var(--card); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #444; }
+        .match-card.completed { border-left-color: var(--red); }
+        .score-input { width: 45px; background: #000; border: 1px solid var(--red); color: white; text-align: center; padding: 5px; border-radius: 4px; font-weight: bold; font-size: 1rem; }
+        .btn-update { background: var(--red); border: none; color: white; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-size: 0.7rem; margin-left: 10px; }
+
+        .golden-boot-box { background: linear-gradient(45deg, #1f2933, #0f1923); border: 2px solid var(--gold); padding: 20px; border-radius: 12px; text-align: center; }
+        .boot-name { font-family: 'Orbitron'; font-size: 1.5rem; color: var(--gold); display: block; margin-top: 5px; }
+
+        /* Activity Log Styling */
+        .log-container { background: #000; padding: 15px; border-radius: 8px; max-height: 200px; overflow-y: auto; font-family: monospace; border: 1px solid #333; }
+        .log-entry { font-size: 0.85rem; padding: 5px 0; border-bottom: 1px solid #222; color: #888; }
+        .log-entry span { color: var(--gold); }
+
+        .playoff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .playoff-stage { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        .final-stage { grid-column: span 2; border: 2px solid var(--gold); }
+        .champion-reveal { font-family: 'Orbitron'; color: var(--gold); font-size: 2rem; text-align: center; margin-top: 20px; display: none; text-shadow: 0 0 10px var(--gold); }
+
+        .reset-btn { margin-top: 50px; background: none; border: 1px solid #444; color: #666; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-bottom: 50px;}
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo">MG</div>
+        <h1>ME ON GAME</h1>
+    </div>
+
+    <section>
+        <h2>Activity Log</h2>
+        <div class="log-container" id="activityLog">
+            <div class="log-entry">Waiting for first match result...</div>
+        </div>
+    </section>
+
+    <section>
+        <h2>League Standings</h2>
+        <table>
+            <thead>
+                <tr><th>Pos</th><th style="text-align:left">Team</th><th>MP</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>P</th></tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>Golden Boot (Top GD)</h2>
+        <div class="golden-boot-box">
+            <span class="boot-name" id="topScorer">Waiting for Kickoff</span>
+        </div>
+    </section>
+
+    <section>
+        <h2>Score Center</h2>
+        <div class="match-list" id="matchList"></div>
+    </section>
+
+    <section>
+        <h2>The Playoffs</h2>
+        <div class="playoff-grid">
+            <div class="playoff-stage"><h3>Semi-Final 1</h3><div id="semi1-ui"></div></div>
+            <div class="playoff-stage"><h3>Semi-Final 2</h3><div id="semi2-ui"></div></div>
+            <div class="playoff-stage final-stage">
+                <h3 style="color:var(--gold)">GRAND FINAL</h3>
+                <div id="final-ui"></div>
+                <div id="champion-box" class="champion-reveal">🏆 CHAMPION: <span id="winner-name"></span> 🏆</div>
+            </div>
+        </div>
+    </section>
+
+    <button class="reset-btn" onclick="resetSeason()">RESET TOURNAMENT</button>
+
+    <script>
+        const teamNames = ["Adamz", "Edrine", "Elvis", "Cyber R", "Rhamim", "Panic Bruce", "Gun", "Happi Yoo"];
+        
+        let tournamentData = JSON.parse(localStorage.getItem('mog_final_v3')) || {
+            matches: generateInitialMatches(),
+            standings: [],
+            playoffs: { s1: [null,null], s2: [null,null], fin: [null,null] },
+            logs: []
+        };
+
+        function generateInitialMatches() {
+            let pool = [...teamNames];
+            let list = [];
+            for (let i = 0; i < pool.length - 1; i++) {
+                for (let j = 0; j < pool.length / 2; j++) {
+                    list.push({ home: pool[j], away: pool[pool.length - 1 - j], hS: null, aS: null });
+                }
+                pool.splice(1, 0, pool.pop());
+            }
+            return list;
+        }
+
+        function addLog(msg) {
+            const now = new Date().toLocaleTimeString();
+            tournamentData.logs.unshift(`[${now}] ${msg}`);
+            if(tournamentData.logs.length > 20) tournamentData.logs.pop();
+        }
+
+        function updateScore(index) {
+            const h = parseInt(document.getElementById(`h-${index}`).value);
+            const a = parseInt(document.getElementById(`a-${index}`).value);
+            if (!isNaN(h) && !isNaN(a)) {
+                const match = tournamentData.matches[index];
+                addLog(`RESULT: ${match.home} <span>${h}-${a}</span> ${match.away}`);
+                match.hS = h;
+                match.aS = a;
+                calculateAll();
+            }
+        }
+
+        function updatePlayoff(stage) {
+            const h = parseInt(document.getElementById(`${stage}-h`).value);
+            const a = parseInt(document.getElementById(`${stage}-a`).value);
+            const stageName = stage === 'fin' ? 'FINAL' : 'SEMI';
+            addLog(`${stageName} UPDATE: Score entered <span>${h}-${a}</span>`);
+            tournamentData.playoffs[stage] = [h, a];
+            calculateAll();
+        }
+
+        function calculateAll() {
+            const stats = teamNames.reduce((acc, name) => {
+                acc[name] = { name, mp: 0, w: 0, d: 0, l: 0, gd: 0, p: 0 };
+                return acc;
+            }, {});
+
+            tournamentData.matches.forEach(m => {
+                if (m.hS !== null) {
+                    stats[m.home].mp++; stats[m.away].mp++;
+                    stats[m.home].gd += (m.hS - m.aS);
+                    stats[m.away].gd += (m.aS - m.hS);
+                    if (m.hS > m.aS) { stats[m.home].w++; stats[m.home].p += 3; stats[m.away].l++; }
+                    else if (m.aS > m.hS) { stats[m.away].w++; stats[m.away].p += 3; stats[m.home].l++; }
+                    else { stats[m.home].d++; stats[m.away].d++; stats[m.home].p += 1; stats[m.away].p += 1; }
+                }
+            });
+
+            tournamentData.standings = Object.values(stats).sort((a, b) => b.p - a.p || b.gd - a.gd);
+            localStorage.setItem('mog_final_v3', JSON.stringify(tournamentData));
+            render();
+        }
+
+        function render() {
+            // Logs
+            document.getElementById('activityLog').innerHTML = tournamentData.logs.length > 0 ? 
+                tournamentData.logs.map(l => `<div class="log-entry">${l}</div>`).join('') : 
+                '<div class="log-entry">Waiting for first match result...</div>';
+
+            // Table
+            document.getElementById('tableBody').innerHTML = tournamentData.standings.map((t, i) => `
+                <tr class="${i < 4 ? 'top-four' : ''}">
+                    <td>${i + 1}</td><td style="text-align:left">${t.name}</td>
+                    <td>${t.mp}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td><td>${t.gd}</td><td>${t.p}</td>
+                </tr>`).join('');
+
+            // Match List
+            document.getElementById('matchList').innerHTML = tournamentData.matches.map((m, i) => `
+                <div class="match-card ${m.hS !== null ? 'completed' : ''}">
+                    <span>${m.home}</span>
+                    <div>
+                        <input type="number" class="score-input" id="h-${i}" value="${m.hS ?? ''}"> : 
+                        <input type="number" class="score-input" id="a-${i}" value="${m.aS ?? ''}">
+                        <button class="btn-update" onclick="updateScore(${i})">SAVE</button>
+                    </div>
+                    <span>${m.away}</span>
+                </div>`).join('');
+
+            // Golden Boot
+            const top = [...tournamentData.standings].sort((a,b) => b.gd - a.gd)[0];
+            document.getElementById('topScorer').innerText = top && top.mp > 0 ? `${top.name} (+${top.gd} GD)` : "Waiting...";
+
+            // Playoff UI
+            const top4 = tournamentData.standings.slice(0, 4);
+            if (top4.length === 4) {
+                const s1 = [top4[0].name, top4[3].name], s2 = [top4[1].name, top4[2].name];
+                document.getElementById('semi1-ui').innerHTML = renderPlayoffInput('s1', s1);
+                document.getElementById('semi2-ui').innerHTML = renderPlayoffInput('s2', s2);
+                const w1 = getWinner(s1, 's1'), w2 = getWinner(s2, 's2');
+                if (w1 && w2) {
+                    const finTeams = [w1, w2];
+                    document.getElementById('final-ui').innerHTML = renderPlayoffInput('fin', finTeams);
+                    const champ = getWinner(finTeams, 'fin');
+                    if (champ) {
+                        document.getElementById('champion-box').style.display = "block";
+                        document.getElementById('winner-name').innerText = champ;
+                    }
+                }
+            }
+        }
+
+        function renderPlayoffInput(id, teams) {
+            const scores = tournamentData.playoffs[id];
+            return `<div style="display:flex; justify-content:space-around; align-items:center; margin-top:10px">
+                    <span>${teams[0]}</span>
+                    <input type="number" class="score-input" id="${id}-h" value="${scores[0] ?? ''}"> VS 
+                    <input type="number" class="score-input" id="${id}-a" value="${scores[1] ?? ''}">
+                    <span>${teams[1]}</span>
+                    <button class="btn-update" onclick="updatePlayoff('${id}')">SAVE</button>
+                </div>`;
+        }
+
+        function getWinner(teams, id) {
+            const s = tournamentData.playoffs[id];
+            if (s[0] === null || s[1] === null) return null;
+            return s[0] > s[1] ? teams[0] : teams[1];
+        }
+
+        function resetSeason() { if(confirm("Clear all tournament data?")) { localStorage.removeItem('mog_final_v3'); location.reload(); } }
+
+        calculateAll();
+    </script>
+</body>
+</html>
