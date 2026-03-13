@@ -4,226 +4,201 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ME ON GAME - ELITE TOURNAMENT</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
+            --neon-purple: #bc13fe;
             --neon-green: #39ff14;
-            --deep-purple: #1a0b2e;
-            --card-purple: #2d1b4d;
-            --text-gray: #b0b0b0;
-            --gold: #ffbd00;
-            --error-red: #ff4655;
+            --dark-bg: #0a0a0a;
+            --glass-bg: rgba(255, 255, 255, 0.05);
         }
 
         body {
-            background-color: #0b0514;
+            background-color: var(--dark-bg);
             color: white;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 20px;
         }
 
-        .main-title {
-            color: var(--neon-green);
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.4rem;
+        h1, h2 {
             text-align: center;
-            margin: 15px 0 5px 0;
             text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(57, 255, 20, 0.4);
+            letter-spacing: 2px;
         }
 
-        .progress-container {
+        .neon-text {
+            color: var(--neon-green);
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Podium Styles */
+        .podium-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 15px;
+            margin: 40px 0;
+            height: 200px;
+        }
+
+        .step {
+            background: var(--glass-bg);
+            border: 1px solid var(--neon-purple);
+            border-radius: 8px 8px 0 0;
+            width: 120px;
+            text-align: center;
+            padding: 10px;
+            box-shadow: 0 0 15px var(--neon-purple);
+        }
+
+        .rank-1 { height: 160px; order: 2; border-color: gold; box-shadow: 0 0 20px gold; }
+        .rank-2 { height: 120px; order: 1; }
+        .rank-3 { height: 90px; order: 3; }
+
+        /* Standings Table */
+        table {
             width: 100%;
-            max-width: 400px;
-            background: #150a21;
-            height: 8px;
+            border-collapse: collapse;
+            background: var(--glass-bg);
             border-radius: 10px;
-            margin: 10px 0;
-            border: 1px solid #25163d;
             overflow: hidden;
-        }
-        #progress-fill {
-            height: 100%;
-            width: 0%;
-            background: var(--neon-green);
-            box-shadow: 0 0 10px var(--neon-green);
-            transition: width 0.8s ease;
+            margin-bottom: 30px;
         }
 
-        .podium-card {
-            background: linear-gradient(180deg, #3d2463 0%, #1a0b2e 100%);
-            width: 100%; max-width: 400px;
-            border-radius: 15px; padding: 20px;
-            border: 1px solid #4d337a; text-align: center; margin-bottom: 20px;
-            box-sizing: border-box;
+        th {
+            background-color: var(--neon-purple);
+            padding: 15px;
+            text-align: left;
         }
 
-        .podium-title { color: var(--gold); font-size: 0.8rem; font-weight: bold; text-transform: uppercase; margin-bottom: 15px; display: block; }
-        .podium-players { display: flex; justify-content: space-around; align-items: flex-end; }
-        .podium-item { flex: 1; }
-        .podium-item span { display: block; font-size: 0.75rem; }
-        .podium-item .score { color: var(--neon-green); font-size: 1.2rem; font-weight: bold; }
-        .rank-1 { transform: scale(1.15); color: var(--gold); }
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
 
-        .section-container { width: 100%; max-width: 450px; background: #150a21; border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        th { background: #25163d; padding: 12px; color: var(--text-gray); font-size: 0.7rem; text-transform: uppercase; }
-        td { padding: 12px; border-bottom: 1px solid #25163d; text-align: center; }
+        .form-dot {
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 4px;
+        }
 
-        .form-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 3px; }
-        .form-w { background: var(--neon-green); }
-        .form-l { background: var(--error-red); }
-        .form-d { background: #888; }
+        .win { background-color: var(--neon-green); }
+        .loss { background-color: #ff3131; }
 
-        .clinched { font-size: 0.55rem; background: var(--neon-green); color: black; padding: 2px 5px; border-radius: 3px; margin-left: 5px; font-weight: 800; vertical-align: middle; }
+        .clinched {
+            color: var(--neon-green);
+            font-weight: bold;
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
 
-        .info-card { background: #150a21; padding: 15px; border-radius: 12px; width: 100%; max-width: 420px; margin-bottom: 20px; box-sizing: border-box; border: 1px solid #25163d; }
-        .stage-box { background: #25163d; padding: 12px; margin-bottom: 8px; border-radius: 6px; display: flex; justify-content: space-between; font-size: 0.85rem; }
-        .stage-box.final { border-left: 4px solid var(--neon-green); color: var(--neon-green); font-weight: bold; }
+        /* Rules & Fixtures */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
 
-        .rule-item { font-size: 0.75rem; color: var(--text-gray); margin-bottom: 8px; line-height: 1.4; display: flex; align-items: flex-start; }
-        .rule-item::before { content: "•"; color: var(--neon-green); font-weight: bold; margin-right: 10px; }
+        .card {
+            background: var(--glass-bg);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--neon-green);
+        }
 
-        .post-result-container { background: #150a21; padding: 20px; border-radius: 12px; width: 100%; max-width: 410px; box-sizing: border-box; }
-        select, input { background: #25163d; border: 1px solid #3d2463; color: white; padding: 12px; border-radius: 6px; margin-bottom: 10px; width: 46%; }
-        .update-btn { background: var(--neon-green); color: black; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-
-        .log-box { font-family: monospace; background: #000; padding: 10px; height: 100px; overflow-y: auto; font-size: 0.7rem; color: #666; margin-top: 15px; border-radius: 4px; line-height: 1.4; }
-        .footer-stamp { margin: 30px 0; font-size: 0.65rem; color: #444; text-align: center; }
-        .reset-btn { background: none; border: 1px solid #333; color: #555; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; }
+        ul { list-style: none; padding: 0; }
+        li { margin-bottom: 10px; font-size: 0.9em; }
     </style>
 </head>
 <body>
 
-    <div class="main-title">ME ON GAME TOURNAMENTS</div>
-    
-    <div class="progress-container">
-        <div id="progress-fill"></div>
-    </div>
+<div class="container">
+    <h1 class="neon-text">Me On Game: Elite Tournament</h1>
 
-    <div class="podium-card">
-        <span class="podium-title">🏆 GOLDEN BOOT (TOP GD)</span>
-        <div class="podium-players">
-            <div class="podium-item"><span id="p2-n">-</span><span class="score" id="p2-v">0</span><span>#2</span></div>
-            <div class="podium-item rank-1"><span id="p1-n">-</span><span class="score" id="p1-v">0</span><span>#1</span></div>
-            <div class="podium-item"><span id="p3-n">-</span><span class="score" id="p3-v">0</span><span>#3</span></div>
+    <div class="podium-container">
+        <div class="step rank-1">
+            <div style="font-size: 2em;">🥇</div>
+            <strong>Leader</strong>
+            <div style="color: gold;">+12 GD</div>
+        </div>
+        <div class="step rank-2">
+            <strong>Runner Up</strong>
+            <div style="color: var(--neon-purple);">+8 GD</div>
+        </div>
+        <div class="step rank-3">
+            <strong>3rd Place</strong>
+            <div style="color: var(--neon-purple);">+5 GD</div>
         </div>
     </div>
 
-    <div class="section-container">
-        <table>
-            <thead>
-                <tr><th>#</th><th style="text-align:left">Team</th><th>GD</th><th>Pts</th></tr>
-            </thead>
-            <tbody id="standingsBody"></tbody>
-        </table>
-    </div>
+    <h2>Current Standings</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Pos</th>
+                <th>Player</th>
+                <th>P</th>
+                <th>GD</th>
+                <th>Pts</th>
+                <th>Form</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Player Alpha <span class="clinched">(C)</span></td>
+                <td>5</td>
+                <td>+12</td>
+                <td>13</td>
+                <td>
+                    <span class="form-dot win"></span>
+                    <span class="form-dot win"></span>
+                    <span class="form-dot win"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Player Beta</td>
+                <td>5</td>
+                <td>+8</td>
+                <td>10</td>
+                <td>
+                    <span class="form-dot win"></span>
+                    <span class="form-dot loss"></span>
+                    <span class="form-dot win"></span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
-    <div class="info-card">
-        <h3 style="color:var(--gold); font-size: 0.8rem; margin:0 0 12px 0; text-transform: uppercase;">Tournament Rules</h3>
-        <div class="rule-item">Players decide whether to use a Smart Assist or no.</div>
-        <div class="rule-item">Immediately after playing, players should post results.</div>
-        <div class="rule-item">Use a round robin system. Every day a team should play one match.</div>
-        <div class="rule-item">Match days and matches start on 13th March 2026.</div>
-    </div>
-
-    <div class="info-card">
-        <h3 style="color:var(--neon-green); font-size: 0.8rem; margin:0 0 12px 0; text-transform: uppercase;">Knockout Seeding</h3>
-        <div class="stage-box">Semi 1: <span id="s1-text">TBA</span></div>
-        <div class="stage-box">Semi 2: <span id="s2-text">TBA</span></div>
-        <div class="stage-box final">Grand Final: <span id="fin-text">TBA</span></div>
-    </div>
-
-    <div class="post-result-container" id="inputBox">
-        <h3 style="font-size: 0.8rem; margin:0 0 15px 0; color:var(--text-gray)">POST NEW RESULT</h3>
-        <div style="display:flex; justify-content: space-between;">
-            <select id="teamA"></select><input type="number" id="scoreA" placeholder="Gls">
+    <div class="grid">
+        <div class="card">
+            <h3 class="neon-text">Tournament Rules</h3>
+            <ul>
+                <li>• 3 Points for a Win, 1 for a Draw.</li>
+                <li>• Top 4 advance to Knockout Rounds.</li>
+                <li>• Tiebreaker: GD > Goals Scored > Head-to-Head.</li>
+                <li>• Final match will be a Best of 3.</li>
+            </ul>
         </div>
-        <div style="display:flex; justify-content: space-between;">
-            <select id="teamB"></select><input type="number" id="scoreB" placeholder="Gls">
+
+        <div class="card">
+            <h3 class="neon-text">Upcoming Fixtures</h3>
+            <ul>
+                <li><strong>Mar 13:</strong> Player Alpha vs Player Gamma</li>
+                <li><strong>Mar 14:</strong> Player Beta vs Player Delta</li>
+                <li><strong>Mar 15:</strong> Quarter Finals Begin</li>
+            </ul>
         </div>
-        <button class="update-btn" onclick="submitScore()">Update Tournament</button>
-        <div class="log-box" id="activityLog"></div>
     </div>
+</div>
 
-    <div id="sync-stamp" class="footer-stamp"></div>
-    <button class="reset-btn" onclick="resetSeason()" style="max-width:200px; margin-bottom:50px">RESET DATA</button>
-
-    <script>
-        const teams = ["Adamz", "Edrine", "Elvis", "Cyber R", "Rhamim", "Panic Bruce", "Gun", "Happi Yoo", "Wilson", "J Collins"];
-        
-        let tournament = JSON.parse(localStorage.getItem('mog_master_final')) || {
-            stats: teams.map(n => ({ n, p: 0, gd: 0, pts: 0, form: [] })),
-            logs: []
-        };
-
-        function init() {
-            const sels = [document.getElementById('teamA'), document.getElementById('teamB')];
-            sels.forEach(s => s.innerHTML = teams.map(t => `<option value="${t}">${t}</option>`).join(''));
-            refreshUI();
-        }
-
-        function submitScore() {
-            const tA = document.getElementById('teamA').value;
-            const tB = document.getElementById('teamB').value;
-            const sA = parseInt(document.getElementById('scoreA').value);
-            const sB = parseInt(document.getElementById('scoreB').value);
-
-            if (isNaN(sA) || isNaN(sB) || tA === tB) return;
-
-            const entryA = tournament.stats.find(x => x.n === tA);
-            const entryB = tournament.stats.find(x => x.n === tB);
-
-            entryA.p++; entryB.p++;
-            entryA.gd += (sA - sB); entryB.gd += (sB - sA);
-
-            if (sA > sB) { entryA.pts += 3; entryA.form.push('w'); entryB.form.push('l'); }
-            else if (sB > sA) { entryB.pts += 3; entryB.form.push('w'); entryA.form.push('l'); }
-            else { entryA.pts += 1; entryB.pts += 1; entryA.form.push('d'); entryB.form.push('d'); }
-
-            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            tournament.logs.unshift(`[${time}] ${tA} ${sA}-${sB} ${tB}`);
-            
-            localStorage.setItem('mog_master_final', JSON.stringify(tournament));
-            refreshUI();
-        }
-
-        function refreshUI() {
-            tournament.stats.sort((a,b) => b.pts - a.pts || b.gd - a.gd);
-
-            document.getElementById('standingsBody').innerHTML = tournament.stats.map((t, i) => {
-                const formHTML = t.form.slice(-3).map(f => `<span class="form-dot form-${f}"></span>`).join('');
-                const clinchHTML = (i < 4 && t.pts >= 12) ? '<span class="clinched">CLINCHED</span>' : '';
-                return `<tr>
-                    <td style="color:#444">${i+1}</td>
-                    <td style="text-align:left">${t.n}${clinchHTML}<br>${formHTML}</td>
-                    <td>${t.gd}</td><td style="font-weight:bold; color:white">${t.pts}</td>
-                </tr>`;
-            }).join('');
-
-            const sortedGD = [...tournament.stats].sort((a,b) => b.gd - a.gd);
-            document.getElementById('p1-n').innerText = sortedGD[0].n; document.getElementById('p1-v').innerText = sortedGD[0].gd;
-            document.getElementById('p2-n').innerText = sortedGD[1].n; document.getElementById('p2-v').innerText = sortedGD[1].gd;
-            document.getElementById('p3-n').innerText = sortedGD[2].n; document.getElementById('p3-v').innerText = sortedGD[2].gd;
-
-            document.getElementById('s1-text').innerText = `${tournament.stats[0].n} vs ${tournament.stats[3].n}`;
-            document.getElementById('s2-text').innerText = `${tournament.stats[1].n} vs ${tournament.stats[2].n}`;
-
-            const totalPossible = (teams.length * (teams.length - 1)) / 2;
-            const progress = (tournament.logs.length / totalPossible) * 100;
-            document.getElementById('progress-fill').style.width = Math.min(progress, 100) + "%";
-
-            document.getElementById('activityLog').innerHTML = tournament.logs.join('<br>');
-            document.getElementById('sync-stamp').innerText = `DATA SYNCED: ${new Date().toLocaleString()}`;
-        }
-
-        function resetSeason() { if(confirm("Clear all data?")) { localStorage.removeItem('mog_master_final'); location.reload(); } }
-
-        init();
-    </script>
 </body>
 </html>
