@@ -15,7 +15,10 @@
         .card { background: var(--card-bg); border: 1px solid var(--neon-purple); border-radius: 10px; padding: 15px; margin-bottom: 20px; box-shadow: 0 0 10px rgba(188,19,254,0.2); }
         h1, h3 { color: var(--neon-green); text-transform: uppercase; margin-top: 0; text-align: center; }
         
-        /* Rules Section Styling */
+        /* New Daily Reminder Styling */
+        .reminder-box { border: 2px solid var(--neon-green); background: rgba(57, 255, 20, 0.1); padding: 10px; margin-bottom: 20px; border-radius: 10px; display: none; }
+        .reminder-box h4 { margin: 0 0 5px 0; color: var(--neon-green); text-align: center; }
+
         .rules-list { font-size: 13px; color: #ccc; padding-left: 20px; line-height: 1.6; }
         .rules-list li span { color: var(--neon-green); font-weight: bold; }
 
@@ -33,12 +36,13 @@
         .D { background-color: #888; }
         .L { background-color: #ff3131; }
 
-        .list-container { max-height: 250px; overflow-y: auto; list-style: none; padding: 0; font-size: 14px; }
-        .list-item { padding: 8px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .list-container { max-height: 300px; overflow-y: auto; list-style: none; padding: 0; font-size: 14px; }
+        .list-item { padding: 10px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .match-info { display: flex; flex-direction: column; }
+        .match-date { font-size: 11px; color: var(--neon-purple); }
         .status-played { color: var(--neon-green); font-weight: bold; }
         .reset-btn { background: #ff3131; margin-top: 20px; font-size: 11px; width: 100%; }
 
-        /* Highlight Top 4 for Knockouts */
         tr:nth-child(-n+4) td:first-child { color: var(--neon-green); font-weight: bold; text-shadow: 0 0 5px var(--neon-green); }
         tr:nth-child(-n+4) { background: rgba(57, 255, 20, 0.05); }
     </style>
@@ -47,14 +51,20 @@
 
     <h1>ME ON GAME: ELITE TOURNAMENT</h1>
 
+    <div id="daily-reminder" class="reminder-box">
+        <h4>📅 TODAY'S FIXTURES (9:00)</h4>
+        <ul id="reminder-list" style="list-style:none; padding:0; margin:0; font-size:14px; text-align:center;"></ul>
+    </div>
+
     <div class="card">
         <h3>Tournament Rules</h3>
         <ul class="rules-list">
-            <li><span>Format:</span> Round Robin (Each player plays everyone once).</li>
+            <li><span>Format:</span> Round Robin (Each team plays everyone once).</li>
+            <li><span>Smart Assist:</span> Players decide whether to use <span>SMART ASSIST</span> or not.</li>
+            <li><span>Schedule:</span> Starting March 14, 2026. Each team plays <span>2 matches per day</span>.</li>
             <li><span>Points:</span> Win = 3pts, Draw = 1pt, Loss = 0pts.</li>
             <li><span>Tiebreakers:</span> 1. Points | 2. Goal Difference (GD) | 3. Goals For (GF).</li>
             <li><span>Qualification:</span> The <span>Top 4</span> players advance to the Knockout seeding.</li>
-            <li><span>Reset:</span> Data is saved locally. Use the red button below to clear all stats for a new tournament.</li>
         </ul>
     </div>
 
@@ -89,7 +99,7 @@
     </div>
 
     <div class="card">
-        <h3>Tournament Fixtures</h3>
+        <h3>Tournament Fixtures (9:00 Daily)</h3>
         <ul id="fixture-list" class="list-container"></ul>
     </div>
 
@@ -115,15 +125,39 @@
 
         function generateFixtures() {
             let fixtures = [];
+            let startDate = new Date(2026, 2, 14); // March 14, 2026
+            let pairings = [];
+
             for (let i = 0; i < defaultPlayers.length; i++) {
                 for (let j = i + 1; j < defaultPlayers.length; j++) {
-                    fixtures.push({ p1: defaultPlayers[i].name, p2: defaultPlayers[j].name });
+                    pairings.push({ p1: defaultPlayers[i].name, p2: defaultPlayers[j].name });
                 }
             }
+
+            // Since 7 players/21 matches, total 7 matches per day (each team plays 2x) 
+            // spread across 3 days (21 / 7 = 3 days total)
+            pairings.forEach((match, index) => {
+                let currentDay = new Date(startDate);
+                currentDay.setDate(startDate.getDate() + Math.floor(index / 7)); 
+                let dateStr = currentDay.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+                fixtures.push({ ...match, time: dateStr + " | 9:00", rawDate: dateStr });
+            });
             return fixtures;
         }
 
         const allFixtures = generateFixtures();
+
+        function showDailyReminder() {
+            const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+            const todaysMatches = allFixtures.filter(f => f.rawDate === today);
+            
+            if (todaysMatches.length > 0) {
+                const reminderBox = document.getElementById('daily-reminder');
+                const list = document.getElementById('reminder-list');
+                reminderBox.style.display = 'block';
+                list.innerHTML = todaysMatches.map(m => `<li>${m.p1} vs ${m.p2}</li>`).join('');
+            }
+        }
 
         function populateDropdowns() {
             const options = players.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
@@ -182,7 +216,10 @@
             document.getElementById('fixture-list').innerHTML = allFixtures.map(f => {
                 const matchDone = history.find(h => (h.p1 === f.p1 && h.p2 === f.p2) || (h.p1 === f.p2 && h.p2 === f.p1));
                 return `<li class="list-item">
-                    ${f.p1} vs ${f.p2} 
+                    <div class="match-info">
+                        <span>${f.p1} vs ${f.p2}</span>
+                        <span class="match-date">${f.time}</span>
+                    </div>
                     <span class="${matchDone ? 'status-played' : ''}">
                         ${matchDone ? '✅ ' + matchDone.res : 'Pending'}
                     </span>
@@ -206,6 +243,7 @@
 
         populateDropdowns();
         updateUI();
+        showDailyReminder();
     </script>
 </body>
 </html>
