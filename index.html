@@ -9,196 +9,150 @@
             --neon-purple: #bc13fe;
             --neon-green: #39ff14;
             --dark-bg: #0a0a0a;
-            --glass-bg: rgba(255, 255, 255, 0.05);
+            --card-bg: #1a1a1a;
         }
+        body { background-color: var(--dark-bg); color: white; font-family: 'Segoe UI', sans-serif; padding: 20px; }
+        .card { background: var(--card-bg); border: 1px solid var(--neon-purple); border-radius: 10px; padding: 15px; margin-bottom: 20px; box-shadow: 0 0 10px rgba(188,19,254,0.2); }
+        h1, h3 { color: var(--neon-green); text-transform: uppercase; margin-top: 0; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { color: var(--neon-purple); text-align: left; border-bottom: 2px solid #333; padding: 10px; }
+        td { padding: 10px; border-bottom: 1px solid #222; }
+        
+        .input-group { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: center; }
+        select, input, button { padding: 8px; border-radius: 5px; border: 1px solid var(--neon-purple); background: #000; color: white; }
+        button { background: var(--neon-purple); color: black; font-weight: bold; cursor: pointer; border: none; padding: 10px 20px; }
+        button:hover { background: var(--neon-green); }
+        .reset-btn { background: #ff3131; margin-top: 20px; font-size: 11px; width: 100%; }
 
-        body {
-            background-color: var(--dark-bg);
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
+        .dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+        .W { background-color: var(--neon-green); }
+        .D { background-color: #888; }
+        .L { background-color: #ff3131; }
 
-        h1, h2 {
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .neon-text {
-            color: var(--neon-green);
-            text-shadow: 0 0 10px var(--neon-green);
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        /* Podium Styles */
-        .podium-container {
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            gap: 15px;
-            margin: 40px 0;
-            height: 200px;
-        }
-
-        .step {
-            background: var(--glass-bg);
-            border: 1px solid var(--neon-purple);
-            border-radius: 8px 8px 0 0;
-            width: 120px;
-            text-align: center;
-            padding: 10px;
-            box-shadow: 0 0 15px var(--neon-purple);
-        }
-
-        .rank-1 { height: 160px; order: 2; border-color: gold; box-shadow: 0 0 20px gold; }
-        .rank-2 { height: 120px; order: 1; }
-        .rank-3 { height: 90px; order: 3; }
-
-        /* Standings Table */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: var(--glass-bg);
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 30px;
-        }
-
-        th {
-            background-color: var(--neon-purple);
-            padding: 15px;
-            text-align: left;
-        }
-
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .form-dot {
-            height: 10px;
-            width: 10px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 4px;
-        }
-
-        .win { background-color: var(--neon-green); }
-        .loss { background-color: #ff3131; }
-
-        .clinched {
-            color: var(--neon-green);
-            font-weight: bold;
-            font-size: 0.8em;
-            margin-left: 5px;
-        }
-
-        /* Rules & Fixtures */
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .card {
-            background: var(--glass-bg);
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid var(--neon-green);
-        }
-
-        ul { list-style: none; padding: 0; }
-        li { margin-bottom: 10px; font-size: 0.9em; }
+        /* Highlight Top 4 for Knockouts */
+        tr:nth-child(-n+4) td:first-child { color: var(--neon-green); font-weight: bold; text-shadow: 0 0 5px var(--neon-green); }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1 class="neon-text">Me On Game: Elite Tournament</h1>
+    <h1>ME ON GAME: ELITE TOURNAMENT</h1>
 
-    <div class="podium-container">
-        <div class="step rank-1">
-            <div style="font-size: 2em;">🥇</div>
-            <strong>Leader</strong>
-            <div style="color: gold;">+12 GD</div>
-        </div>
-        <div class="step rank-2">
-            <strong>Runner Up</strong>
-            <div style="color: var(--neon-purple);">+8 GD</div>
-        </div>
-        <div class="step rank-3">
-            <strong>3rd Place</strong>
-            <div style="color: var(--neon-purple);">+5 GD</div>
+    <div class="card">
+        <h3>Add Match Result</h3>
+        <div class="input-group">
+            <select id="p1-select"></select>
+            <input type="number" id="p1-score" placeholder="0" style="width: 50px;">
+            <span>VS</span>
+            <input type="number" id="p2-score" placeholder="0" style="width: 50px;">
+            <select id="p2-select"></select>
+            <button onclick="addMatch()">Update Table</button>
         </div>
     </div>
 
-    <h2>Current Standings</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Pos</th>
-                <th>Player</th>
-                <th>P</th>
-                <th>GD</th>
-                <th>Pts</th>
-                <th>Form</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>1</td>
-                <td>Player Alpha <span class="clinched">(C)</span></td>
-                <td>5</td>
-                <td>+12</td>
-                <td>13</td>
-                <td>
-                    <span class="form-dot win"></span>
-                    <span class="form-dot win"></span>
-                    <span class="form-dot win"></span>
-                </td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>Player Beta</td>
-                <td>5</td>
-                <td>+8</td>
-                <td>10</td>
-                <td>
-                    <span class="form-dot win"></span>
-                    <span class="form-dot loss"></span>
-                    <span class="form-dot win"></span>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    <div class="grid">
-        <div class="card">
-            <h3 class="neon-text">Tournament Rules</h3>
-            <ul>
-                <li>• 3 Points for a Win, 1 for a Draw.</li>
-                <li>• Top 4 advance to Knockout Rounds.</li>
-                <li>• Tiebreaker: GD > Goals Scored > Head-to-Head.</li>
-                <li>• Final match will be a Best of 3.</li>
-            </ul>
-        </div>
-
-        <div class="card">
-            <h3 class="neon-text">Upcoming Fixtures</h3>
-            <ul>
-                <li><strong>Mar 13:</strong> Player Alpha vs Player Gamma</li>
-                <li><strong>Mar 14:</strong> Player Beta vs Player Delta</li>
-                <li><strong>Mar 15:</strong> Quarter Finals Begin</li>
-            </ul>
-        </div>
+    <div class="card">
+        <h3>Current Standings</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>Player</th>
+                    <th>P</th>
+                    <th>GD</th>
+                    <th>Pts</th>
+                    <th>Form</th>
+                </tr>
+            </thead>
+            <tbody id="standings-body"></tbody>
+        </table>
+        <button class="reset-btn" onclick="resetTournament()">Reset All Tournament Data</button>
     </div>
-</div>
 
+    <script>
+        // Updated 6-Player Roster
+        const defaultPlayers = [
+            { name: "Edrine", p: 0, gd: 0, pts: 0, form: [] },
+            { name: "Adamz", p: 0, gd: 0, pts: 0, form: [] },
+            { name: "Cyber R", p: 0, gd: 0, pts: 0, form: [] },
+            { name: "Panic Bruce", p: 0, gd: 0, pts: 0, form: [] },
+            { name: "Itsfao", p: 0, gd: 0, pts: 0, form: [] },
+            { name: "Rhamim", p: 0, gd: 0, pts: 0, form: [] }
+        ];
+
+        let players = JSON.parse(localStorage.getItem('eliteTournamentData')) || defaultPlayers;
+
+        function populateDropdowns() {
+            const p1Dropdown = document.getElementById('p1-select');
+            const p2Dropdown = document.getElementById('p2-select');
+            // Ensure dropdowns always show current player names
+            const options = players.map(player => `<option value="${player.name}">${player.name}</option>`).join('');
+            p1Dropdown.innerHTML = options;
+            p2Dropdown.innerHTML = options;
+        }
+
+        function addMatch() {
+            const name1 = document.getElementById('p1-select').value;
+            const name2 = document.getElementById('p2-select').value;
+            const score1 = parseInt(document.getElementById('p1-score').value) || 0;
+            const score2 = parseInt(document.getElementById('p2-score').value) || 0;
+
+            if (name1 === name2) return alert("A player cannot play against themselves!");
+
+            const p1 = players.find(p => p.name === name1);
+            const p2 = players.find(p => p.name === name2);
+
+            p1.p += 1; p2.p += 1;
+            p1.gd += (score1 - score2);
+            p2.gd += (score2 - score1);
+
+            if (score1 > score2) {
+                p1.pts += 3; p1.form.push('W'); p2.form.push('L');
+            } else if (score1 < score2) {
+                p2.pts += 3; p2.form.push('W'); p1.form.push('L');
+            } else {
+                p1.pts += 1; p2.pts += 1; p1.form.push('D'); p2.form.push('D');
+            }
+
+            if (p1.form.length > 5) p1.form.shift();
+            if (p2.form.length > 5) p2.form.shift();
+
+            saveAndRefresh();
+            // Clear inputs for next result
+            document.getElementById('p1-score').value = '';
+            document.getElementById('p2-score').value = '';
+        }
+
+        function saveAndRefresh() {
+            localStorage.setItem('eliteTournamentData', JSON.stringify(players));
+            updateUI();
+        }
+
+        function updateUI() {
+            // Tiebreaker: Points, then GD
+            players.sort((a, b) => b.pts - a.pts || b.gd - a.gd);
+            const tbody = document.getElementById('standings-body');
+            tbody.innerHTML = players.map((p, i) => `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td>${p.name}</td>
+                    <td>${p.p}</td>
+                    <td>${p.gd > 0 ? '+' + p.gd : p.gd}</td>
+                    <td>${p.pts}</td>
+                    <td>${p.form.map(f => `<span class="dot ${f}"></span>`).join('')}</td>
+                </tr>
+            `).join('');
+        }
+
+        function resetTournament() {
+            if (confirm("Reset everything? All current standings will be lost.")) {
+                localStorage.removeItem('eliteTournamentData');
+                players = JSON.parse(JSON.stringify(defaultPlayers));
+                updateUI();
+                populateDropdowns();
+            }
+        }
+
+        populateDropdowns();
+        updateUI();
+    </script>
 </body>
 </html>
