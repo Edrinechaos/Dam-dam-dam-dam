@@ -15,6 +15,10 @@
         .award-card { background: #222; padding: 15px; border-radius: 10px; text-align: center; border-bottom: 4px solid var(--gold); }
         .clean-sheet { border-bottom-color: var(--silver); }
 
+        /* Progress Bar Styling */
+        .progress-container { width: 100%; background: #333; border-radius: 5px; margin: 10px 0; height: 10px; }
+        .progress-bar { height: 100%; background: var(--primary); border-radius: 5px; width: 0%; transition: 0.5s; }
+
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 12px; text-align: center; border-bottom: 1px solid #333; }
         th { background: #252525; }
@@ -27,9 +31,11 @@
         #fixtureList, #historyLog { 
             display: grid; gap: 10px; max-height: 200px; overflow-y: auto; background: #111; padding: 10px; border-radius: 5px;
         }
-        #fixtureList { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+        #fixtureList { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
         .log-entry { font-size: 0.9em; padding: 8px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; }
-        .fixture-item { font-size: 0.8em; padding: 5px; border-bottom: 1px solid #222; }
+        .fixture-item { font-size: 0.8em; padding: 5px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        .played-match { color: #888; border-color: #00ff8833; }
+        .tick { color: var(--primary); font-weight: bold; margin-left: 5px; }
         .tag { font-size: 0.7em; background: #444; padding: 2px 5px; border-radius: 3px; margin-right: 5px; }
     </style>
 </head>
@@ -71,7 +77,11 @@
     </div>
 
     <div class="section">
-        <h3>Generated Fixtures</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3>Generated Fixtures</h3>
+            <div id="progressText" style="font-weight: bold; color: var(--primary);">0/0 Matches</div>
+        </div>
+        <div class="progress-container"><div id="progressBar" class="progress-bar"></div></div>
         <div id="fixtureList"></div>
     </div>
 
@@ -124,6 +134,10 @@
         }
     }
 
+    function isMatchPlayed(p1, p2) {
+        return history.some(m => (m.p1 === p1 && m.p2 === p2) || (m.p1 === p2 && m.p2 === p1));
+    }
+
     function renderAll() {
         document.getElementById('playerTags').innerHTML = players.map(p => `
             <span class="tag">${p} <span style="cursor:pointer;color:red" onclick="removePlayer('${p}')">×</span></span>
@@ -133,14 +147,30 @@
         document.getElementById('p1Select').innerHTML = options;
         document.getElementById('p2Select').innerHTML = options;
 
-        let fixHTML = ""; let count = 1;
+        // Render Fixtures & Calculate Progress
+        let fixHTML = ""; 
+        let totalMatches = (players.length * (players.length - 1)) / 2;
+        let playedCount = 0;
+        let count = 1;
+
         for (let i = 0; i < players.length; i++) {
             for (let j = i + 1; j < players.length; j++) {
-                fixHTML += `<div class="fixture-item"><b>M${count}:</b> ${players[i]} vs ${players[j]}</div>`;
+                const played = isMatchPlayed(players[i], players[j]);
+                if (played) playedCount++;
+                fixHTML += `
+                    <div class="fixture-item ${played ? 'played-match' : ''}">
+                        <span><b>M${count}:</b> ${players[i]} vs ${players[j]}</span>
+                        ${played ? '<span class="tick">✅</span>' : ''}
+                    </div>`;
                 count++;
             }
         }
         document.getElementById('fixtureList').innerHTML = fixHTML;
+        
+        // Update Progress Bar & Text
+        document.getElementById('progressText').innerText = `${playedCount} / ${totalMatches} Matches Played`;
+        const percentage = totalMatches > 0 ? (playedCount / totalMatches) * 100 : 0;
+        document.getElementById('progressBar').style.width = percentage + "%";
 
         const sorted = [...players].sort((a, b) => (stats[b].pts - stats[a].pts) || (stats[b].gd - stats[a].gd));
         document.getElementById('standingsBody').innerHTML = sorted.map((p, i) => `
@@ -156,13 +186,12 @@
             </tr>
         `).join('');
 
-        // Render History Log
         const logBox = document.getElementById('historyLog');
         if (history.length > 0) {
-            logBox.innerHTML = history.map(item => `
+            logBox.innerHTML = history.map((item, idx) => `
                 <div class="log-entry">
                     <span>${item.p1} <b>${item.s1} - ${item.s2}</b> ${item.p2}</span>
-                    <span style="color:#666; font-size:0.8em;">Match #${history.indexOf(item) + 1}</span>
+                    <span style="color:#666; font-size:0.8em;">#${history.length - idx}</span>
                 </div>
             `).join('');
         }
@@ -173,10 +202,8 @@
     function updateAwards() {
         const activePlayers = players.filter(p => stats[p].p > 0);
         if (activePlayers.length === 0) return;
-
         const scorer = [...activePlayers].sort((a, b) => (stats[b].gd - stats[a].gd) || (stats[b].gf - stats[a].gf))[0];
         document.getElementById('topScorerDisplay').innerHTML = `<b>${scorer}</b> <br><small>GD: ${stats[scorer].gd}</small>`;
-
         const defender = [...activePlayers].sort((a, b) => (stats[a].ga - stats[b].ga) || (stats[b].p - stats[a].p))[0];
         document.getElementById('cleanSheetDisplay').innerHTML = `<b>${defender}</b> <br><small>GA: ${stats[defender].ga}</small>`;
     }
@@ -199,9 +226,7 @@
         else if (s2 > s1) { stats[p2].pts += 3; stats[p2].form.push('W'); stats[p1].form.push('L'); }
         else { stats[p1].pts += 1; stats[p2].pts += 1; stats[p1].form.push('D'); stats[p2].form.push('D'); }
 
-        // Add to history (unshift puts new items at top)
         history.unshift({ p1, s1, s2, p2 });
-        
         save(); renderAll();
     }
 
