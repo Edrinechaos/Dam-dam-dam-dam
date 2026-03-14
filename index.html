@@ -3,247 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ME ON GAME - ELITE TOURNAMENT</title>
+    <title>ME ON GAME: ELITE TOURNAMENT</title>
     <style>
         :root {
-            --neon-purple: #bc13fe;
-            --neon-green: #39ff14;
-            --dark-bg: #0a0a0a;
-            --card-bg: #1a1a1a;
+            --primary: #00ff88;
+            --bg: #0a0a0a;
+            --card: #1a1a1a;
+            --text: #ffffff;
         }
-        body { background-color: var(--dark-bg); color: white; font-family: 'Segoe UI', sans-serif; padding: 20px; }
-        .card { background: var(--card-bg); border: 1px solid var(--neon-purple); border-radius: 10px; padding: 15px; margin-bottom: 20px; box-shadow: 0 0 10px rgba(188,19,254,0.2); }
-        h1, h3 { color: var(--neon-green); text-transform: uppercase; margin-top: 0; text-align: center; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+        .container { max-width: 1000px; margin: auto; }
+        h1 { color: var(--primary); text-align: center; text-transform: uppercase; }
         
-        /* New Daily Reminder Styling */
-        .reminder-box { border: 2px solid var(--neon-green); background: rgba(57, 255, 20, 0.1); padding: 10px; margin-bottom: 20px; border-radius: 10px; display: none; }
-        .reminder-box h4 { margin: 0 0 5px 0; color: var(--neon-green); text-align: center; }
-
-        .rules-list { font-size: 13px; color: #ccc; padding-left: 20px; line-height: 1.6; }
-        .rules-list li span { color: var(--neon-green); font-weight: bold; }
-
-        .input-group { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: center; margin-bottom: 10px; }
-        select, input, button { padding: 8px; border-radius: 5px; border: 1px solid var(--neon-purple); background: #000; color: white; }
-        button { background: var(--neon-purple); color: black; font-weight: bold; cursor: pointer; border: none; padding: 10px 20px; }
-        button:hover { background: var(--neon-green); }
+        .section {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary);
+        }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { color: var(--neon-purple); text-align: left; border-bottom: 2px solid #333; padding: 10px; }
-        td { padding: 10px; border-bottom: 1px solid #222; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #333; }
+        th { background: #252525; color: var(--primary); }
 
-        .dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; }
-        .W { background-color: var(--neon-green); }
-        .D { background-color: #888; }
-        .L { background-color: #ff3131; }
-
-        .list-container { max-height: 300px; overflow-y: auto; list-style: none; padding: 0; font-size: 14px; }
-        .list-item { padding: 10px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
-        .match-info { display: flex; flex-direction: column; }
-        .match-date { font-size: 11px; color: var(--neon-purple); }
-        .status-played { color: var(--neon-green); font-weight: bold; }
-        .reset-btn { background: #ff3131; margin-top: 20px; font-size: 11px; width: 100%; }
-
-        tr:nth-child(-n+4) td:first-child { color: var(--neon-green); font-weight: bold; text-shadow: 0 0 5px var(--neon-green); }
-        tr:nth-child(-n+4) { background: rgba(57, 255, 20, 0.05); }
+        .form-group { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        select, input, button {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background: #333;
+            color: white;
+        }
+        button {
+            background: var(--primary);
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover { opacity: 0.8; }
+        
+        .rules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .log-entry { font-size: 0.9em; padding: 5px; border-bottom: 1px solid #222; }
     </style>
 </head>
 <body>
 
-    <h1>ME ON GAME: ELITE TOURNAMENT</h1>
+<div class="container">
+    <h1>Elite Tournament Dashboard</h1>
 
-    <div id="daily-reminder" class="reminder-box">
-        <h4>📅 TODAY'S FIXTURES (9:00)</h4>
-        <ul id="reminder-list" style="list-style:none; padding:0; margin:0; font-size:14px; text-align:center;"></ul>
-    </div>
-
-    <div class="card">
-        <h3>Tournament Rules</h3>
-        <ul class="rules-list">
-            <li><span>Format:</span> Round Robin (Each team plays everyone once).</li>
-            <li><span>Smart Assist:</span> Players decide whether to use <span>SMART ASSIST</span> or not.</li>
-            <li><span>Schedule:</span> Starting March 14, 2026. Each team plays <span>2 matches per day</span>.</li>
-            <li><span>Points:</span> Win = 3pts, Draw = 1pt, Loss = 0pts.</li>
-            <li><span>Tiebreakers:</span> 1. Points | 2. Goal Difference (GD) | 3. Goals For (GF).</li>
-            <li><span>Qualification:</span> The <span>Top 4</span> players advance to the Knockout seeding.</li>
-        </ul>
-    </div>
-
-    <div class="card">
-        <h3>Add Match Result</h3>
-        <div class="input-group">
-            <select id="p1-select"></select>
-            <input type="number" id="p1-score" placeholder="0" style="width: 50px;">
-            <span>VS</span>
-            <input type="number" id="p2-score" placeholder="0" style="width: 50px;">
-            <select id="p2-select"></select>
-            <button onclick="addMatch()">Update Table</button>
+    <div class="rules-grid">
+        <div class="section">
+            <h3>Elite Roster</h3>
+            <ul id="rosterList">
+                <li>Edrine, Adamz, Cyber R, Panic Bruce, Itsfao, Rhamim, Massa</li>
+            </ul>
+        </div>
+        <div class="section">
+            <h3>Tournament Rules</h3>
+            <ul style="font-size: 0.85em;">
+                <li>Single Round Robin (21 Total Matches)</li>
+                <li>Win: 3pts | Draw: 1pt | Loss: 0pts</li>
+                <li>Tiebreakers: GD > GF > Head-to-Head</li>
+                <li><b>Top 4</b> qualify for Playoffs</li>
+            </ul>
         </div>
     </div>
 
-    <div class="card">
-        <h3>Current Standings</h3>
-        <table>
+    <div class="section">
+        <h3>Live Standings</h3>
+        <table id="standingsTable">
             <thead>
                 <tr>
                     <th>Pos</th>
                     <th>Player</th>
                     <th>P</th>
-                    <th>GF</th>
                     <th>GD</th>
+                    <th>GF</th>
                     <th>Pts</th>
                     <th>Form</th>
                 </tr>
             </thead>
-            <tbody id="standings-body"></tbody>
+            <tbody id="standingsBody"></tbody>
         </table>
     </div>
 
-    <div class="card">
-        <h3>Tournament Fixtures (9:00 Daily)</h3>
-        <ul id="fixture-list" class="list-container"></ul>
+    <div class="section">
+        <h3>Record Match Result</h3>
+        <div class="form-group">
+            <select id="p1Select"></select>
+            <input type="number" id="p1Score" placeholder="Score" min="0">
+            <span>vs</span>
+            <input type="number" id="p2Score" placeholder="Score" min="0">
+            <select id="p2Select"></select>
+            <button onclick="submitResult()">Update Table</button>
+        </div>
     </div>
 
-    <div class="card">
-        <h3>Match History</h3>
-        <ul id="match-history" class="list-container"></ul>
-        <button class="reset-btn" onclick="resetTournament()">Reset All Tournament Data</button>
+    <div class="section">
+        <h3>Recent Match History</h3>
+        <div id="matchLog"></div>
+        <button onclick="resetData()" style="background: #ff4444; margin-top: 15px;">Reset All Data</button>
     </div>
+</div>
 
-    <script>
-        const defaultPlayers = [
-            { name: "Edrine", p: 0, gf: 0, gd: 0, pts: 0, form: [] },
-            { name: "Adamz", p: 0, gf: 0, gd: 0, pts: 0, form: [] },
-            { name: "Cyber R", p: 0, gf: 0, gd: 0, pts: 0, form: [] },
-            { name: "Panic Bruce", p: 0, gf: 0, gd: 0, pts: 0, form: [] },
-            { name: "Itsfao", p: 0, gf: 0, gd: 0, pts: 0, form: [] },
-            { name: "Rhamim", p: 0, gf: 0, gd: 0, pts: 0, form: [] },
-            { name: "Massa", p: 0, gf: 0, gd: 0, pts: 0, form: [] }
-        ];
+<script>
+    const players = ["Edrine", "Adamz", "Cyber R", "Panic Bruce", "Itsfao", "Rhamim", "Massa"];
+    let stats = JSON.parse(localStorage.getItem('tournamentStats')) || {};
+    let history = JSON.parse(localStorage.getItem('matchHistory')) || [];
 
-        let players = JSON.parse(localStorage.getItem('eliteTournamentData')) || defaultPlayers;
-        let history = JSON.parse(localStorage.getItem('eliteMatchHistory')) || [];
-
-        function generateFixtures() {
-            let fixtures = [];
-            let startDate = new Date(2026, 2, 14); // March 14, 2026
-            let pairings = [];
-
-            for (let i = 0; i < defaultPlayers.length; i++) {
-                for (let j = i + 1; j < defaultPlayers.length; j++) {
-                    pairings.push({ p1: defaultPlayers[i].name, p2: defaultPlayers[j].name });
-                }
+    function initStats() {
+        players.forEach(p => {
+            if (!stats[p]) {
+                stats[p] = { p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0, form: [] };
             }
+        });
+        updateUI();
+        populateSelects();
+    }
 
-            // Since 7 players/21 matches, total 7 matches per day (each team plays 2x) 
-            // spread across 3 days (21 / 7 = 3 days total)
-            pairings.forEach((match, index) => {
-                let currentDay = new Date(startDate);
-                currentDay.setDate(startDate.getDate() + Math.floor(index / 7)); 
-                let dateStr = currentDay.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-                fixtures.push({ ...match, time: dateStr + " | 9:00", rawDate: dateStr });
-            });
-            return fixtures;
+    function populateSelects() {
+        const s1 = document.getElementById('p1Select');
+        const s2 = document.getElementById('p2Select');
+        players.forEach(p => {
+            s1.innerHTML += `<option value="${p}">${p}</option>`;
+            s2.innerHTML += `<option value="${p}">${p}</option>`;
+        });
+    }
+
+    function submitResult() {
+        const p1 = document.getElementById('p1Select').value;
+        const p2 = document.getElementById('p2Select').value;
+        const s1 = parseInt(document.getElementById('p1Score').value);
+        const s2 = parseInt(document.getElementById('p2Score').value);
+
+        if (p1 === p2 || isNaN(s1) || isNaN(s2)) return alert("Check inputs!");
+
+        // Update P1
+        stats[p1].p++;
+        stats[p1].gf += s1;
+        stats[p1].ga += s2;
+        stats[p1].gd = stats[p1].gf - stats[p1].ga;
+
+        // Update P2
+        stats[p2].p++;
+        stats[p2].gf += s2;
+        stats[p2].ga += s1;
+        stats[p2].gd = stats[p2].gf - stats[p2].ga;
+
+        if (s1 > s2) {
+            stats[p1].pts += 3; stats[p1].form.push('W');
+            stats[p2].form.push('L');
+        } else if (s1 < s2) {
+            stats[p2].pts += 3; stats[p2].form.push('W');
+            stats[p1].form.push('L');
+        } else {
+            stats[p1].pts += 1; stats[p2].pts += 1;
+            stats[p1].form.push('D'); stats[p2].form.push('D');
         }
 
-        const allFixtures = generateFixtures();
+        history.unshift(`${p1} ${s1} - ${s2} ${p2}`);
+        saveAndRefresh();
+    }
 
-        function showDailyReminder() {
-            const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-            const todaysMatches = allFixtures.filter(f => f.rawDate === today);
-            
-            if (todaysMatches.length > 0) {
-                const reminderBox = document.getElementById('daily-reminder');
-                const list = document.getElementById('reminder-list');
-                reminderBox.style.display = 'block';
-                list.innerHTML = todaysMatches.map(m => `<li>${m.p1} vs ${m.p2}</li>`).join('');
-            }
-        }
+    function updateUI() {
+        const tbody = document.getElementById('standingsBody');
+        const sorted = players.sort((a, b) => {
+            if (stats[b].pts !== stats[a].pts) return stats[b].pts - stats[a].pts;
+            if (stats[b].gd !== stats[a].gd) return stats[b].gd - stats[a].gd;
+            return stats[b].gf - stats[a].gf;
+        });
 
-        function populateDropdowns() {
-            const options = players.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
-            document.getElementById('p1-select').innerHTML = options;
-            document.getElementById('p2-select').innerHTML = options;
-        }
-
-        function addMatch() {
-            const n1 = document.getElementById('p1-select').value;
-            const n2 = document.getElementById('p2-select').value;
-            const s1 = parseInt(document.getElementById('p1-score').value) || 0;
-            const s2 = parseInt(document.getElementById('p2-score').value) || 0;
-
-            if (n1 === n2) return alert("Players must be different!");
-
-            const p1 = players.find(p => p.name === n1);
-            const p2 = players.find(p => p.name === n2);
-
-            p1.p += 1; p2.p += 1;
-            p1.gf += s1; p2.gf += s2;
-            p1.gd += (s1 - s2);
-            p2.gd += (s2 - s1);
-
-            if (s1 > s2) { p1.pts += 3; p1.form.push('W'); p2.form.push('L'); }
-            else if (s1 < s2) { p2.pts += 3; p2.form.push('W'); p1.form.push('L'); }
-            else { p1.pts += 1; p2.pts += 1; p1.form.push('D'); p2.form.push('D'); }
-
-            if (p1.form.length > 5) p1.form.shift();
-            if (p2.form.length > 5) p2.form.shift();
-
-            history.unshift({ m: `${n1} vs ${n2}`, res: `${s1} - ${s2}`, p1: n1, p2: n2 });
-            saveAndRefresh();
-            document.getElementById('p1-score').value = '';
-            document.getElementById('p2-score').value = '';
-        }
-
-        function saveAndRefresh() {
-            localStorage.setItem('eliteTournamentData', JSON.stringify(players));
-            localStorage.setItem('eliteMatchHistory', JSON.stringify(history));
-            updateUI();
-        }
-
-        function updateUI() {
-            players.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
-            document.getElementById('standings-body').innerHTML = players.map((p, i) => `
+        tbody.innerHTML = "";
+        sorted.forEach((p, i) => {
+            const f = stats[p].form.slice(-3).join('');
+            tbody.innerHTML += `
                 <tr>
                     <td>${i + 1}</td>
-                    <td>${p.name}</td>
-                    <td>${p.p}</td>
-                    <td>${p.gf}</td>
-                    <td>${p.gd > 0 ? '+' + p.gd : p.gd}</td>
-                    <td>${p.pts}</td>
-                    <td>${p.form.map(f => `<span class="dot ${f}"></span>`).join('')}</td>
-                </tr>`).join('');
+                    <td>${p}</td>
+                    <td>${stats[p].p}</td>
+                    <td>${stats[p].gd}</td>
+                    <td>${stats[p].gf}</td>
+                    <td>${stats[p].pts}</td>
+                    <td>${f || '-'}</td>
+                </tr>`;
+        });
 
-            document.getElementById('fixture-list').innerHTML = allFixtures.map(f => {
-                const matchDone = history.find(h => (h.p1 === f.p1 && h.p2 === f.p2) || (h.p1 === f.p2 && h.p2 === f.p1));
-                return `<li class="list-item">
-                    <div class="match-info">
-                        <span>${f.p1} vs ${f.p2}</span>
-                        <span class="match-date">${f.time}</span>
-                    </div>
-                    <span class="${matchDone ? 'status-played' : ''}">
-                        ${matchDone ? '✅ ' + matchDone.res : 'Pending'}
-                    </span>
-                </li>`;
-            }).join('');
+        document.getElementById('matchLog').innerHTML = history.slice(0, 5).map(m => `<div class="log-entry">${m}</div>`).join('');
+    }
 
-            document.getElementById('match-history').innerHTML = history.map(h => `
-                <li class="list-item">${h.m} <span class="status-played">${h.res}</span></li>
-            `).join('');
-        }
-
-        function resetTournament() {
-            if (confirm("Reset everything?")) {
-                localStorage.clear();
-                players = JSON.parse(JSON.stringify(defaultPlayers));
-                history = [];
-                updateUI();
-                populateDropdowns();
-            }
-        }
-
-        populateDropdowns();
+    function saveAndRefresh() {
+        localStorage.setItem('tournamentStats', JSON.stringify(stats));
+        localStorage.setItem('matchHistory', JSON.stringify(history));
         updateUI();
-        showDailyReminder();
-    </script>
+    }
+
+    function resetData() {
+        if (confirm("Clear all tournament data?")) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+
+    initStats();
+</script>
 </body>
 </html>
